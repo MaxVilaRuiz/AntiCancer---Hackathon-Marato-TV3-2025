@@ -77,4 +77,39 @@ class DailyQuestionnaireStorage {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_effectiveDateKey);
   }
+
+    /// Devuelve las últimas N entradas únicas por día (YYYY-MM-DD),
+  /// ordenadas de más reciente a más antigua.
+  static Future<List<Map<String, dynamic>>> getLastNUniqueDayEntries(int n) async {
+    final prefs = await SharedPreferences.getInstance();
+    final rawEntries = prefs.getStringList(_entriesKey) ?? [];
+
+    final entries = rawEntries
+        .map((e) => jsonDecode(e) as Map<String, dynamic>)
+        .where((e) => e['date'] != null)
+        .toList();
+
+    // Ordenar por fecha desc (formato YYYY-MM-DD => orden lexicográfico válido)
+    entries.sort((a, b) => (b['date'] as String).compareTo(a['date'] as String));
+
+    // Quedarnos con 1 entrada por día (la más reciente de ese día)
+    final seenDates = <String>{};
+    final uniqueByDay = <Map<String, dynamic>>[];
+
+    for (final e in entries) {
+      final date = e['date'] as String;
+      if (!seenDates.contains(date)) {
+        seenDates.add(date);
+        uniqueByDay.add(e);
+      }
+      if (uniqueByDay.length == n) break;
+    }
+
+    return uniqueByDay;
+  }
+
+  /// Conveniencia: últimos 7 días con formulario
+  static Future<List<Map<String, dynamic>>> getLast7DaysEntries() async {
+    return getLastNUniqueDayEntries(7);
+  }
 }

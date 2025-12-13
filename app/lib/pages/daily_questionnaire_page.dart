@@ -41,11 +41,11 @@ class _DailyQuestionnairePageState
     'He tingut problemes per recordar informació que ja sabia prèviament.':
         'Memòria',
     'He tingut problemes per prendre una decisió que abans no m’hauria costat.':
-        'Funcions executives',
+        'Fluència verbal',
     'He tingut dificultats per planificar el meu dia.':
-        'Funcions executives',
+        'Fluència verbal',
     'He sentit sensació de nebulosa mental.':
-        'Funcions executives',
+        'Fluència verbal',
     'He sentit que penso més lenta avui.':
         'Velocitat de processament',
     'Ninguna de les anteriors.': 'Cap',
