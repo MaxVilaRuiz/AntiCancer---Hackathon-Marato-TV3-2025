@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pages/home_page.dart';
+import 'widgets/main_scaffold.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,12 +14,10 @@ class MyApp extends StatelessWidget {
       title: 'Anticancer',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
-        ),
         useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const HomePage(),
+      home: const MainScaffold(),
     );
   }
 }

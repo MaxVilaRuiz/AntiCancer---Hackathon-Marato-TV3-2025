@@ -6,22 +6,29 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Padding(
-          padding: const EdgeInsets.only(top: 35.0), 
-          child: const Text(
-            'Bienvenido Max',
-            style: TextStyle(
-              fontSize: 25,
-              fontWeight: FontWeight.bold,
-            )
-          ),
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 16.0, left: 16, right: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: const [
+            // Title
+            Text(
+              'Bienvenido Max',
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            SizedBox(height: 24),
+
+            // Widget de Speech to Text
+            Expanded(
+              child: STTUWidget(),
+            ),
+          ],
         ),
-        centerTitle: true,
-      ),
-      body: const Center(
-        child: STTUWidget(),
       ),
     );
   }
