@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/speech.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -19,7 +20,9 @@ class HomePage extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: const Center(),
+      body: const Center(
+        child: STTUWidget(),
+      ),
     );
   }
 }
