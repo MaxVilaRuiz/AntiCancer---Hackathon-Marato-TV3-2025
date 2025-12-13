@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/daily_questionnaire_storage.dart';
+import '../widgets/youtube_thumbnail_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class StatsPage extends StatelessWidget {
   const StatsPage({super.key});
@@ -36,37 +38,37 @@ class StatsPage extends StatelessWidget {
 
   static const Map<String, String> recommendationByDiagnosis = {
     'Atenció': '''
-  Avui és un bon dia per fer algo d'esport, potser anar a caminar una estona o alguna altra activitat que et vingui de gust.
-  Aquesta setmana és ideal per fer alguna manualitat, posa molta atenció en allò que fas, potser un dibuix, un puzle, cosir alguna cosa, etc.
-  Si tens una estona, llegeix un text curt (una notícia, un paràgraf d’un llibre) i intenta comprendre’l detenidament. Pots subratllar mentalment les idees importants per mantenir-te concentrat.
-  ''',
+Avui és un bon dia per fer algo d'esport, potser anar a caminar una estona o alguna altra activitat que et vingui de gust.
+Aquesta setmana és ideal per fer alguna manualitat, posa molta atenció en allò que fas, potser un dibuix, un puzle, cosir alguna cosa, etc.
+Si tens una estona, llegeix un text curt (una notícia, un paràgraf d’un llibre) i intenta comprendre’l detenidament. Pots subratllar mentalment les idees importants per mantenir-te concentrat.
+    ''',
 
     'Memòria': '''
-  Avui és un bon dia per fer algo d'esport, potser anar a caminar una estona o alguna altra activitat que et vingui de gust.
-  Aquesta setmana és ideal per tornar a fer aquella recepta que has deixat de fer i et sortia tan bé.
-  Prova d'aprendre algunes paraules d'un nou idioma, potser un idioma que ja en sàpigues una mica o un completament nou!
+Avui és un bon dia per fer algo d'esport, potser anar a caminar una estona o alguna altra activitat que et vingui de gust.
+Aquesta setmana és ideal per tornar a fer aquella recepta que has deixat de fer i et sortia tan bé.
+Prova d'aprendre algunes paraules d'un nou idioma, potser un idioma que ja en sàpigues una mica o un completament nou!
   ''',
 
     'Velocitat de processament': '''
-  Avui és un bon dia per fer algo d'esport, potser anar a caminar una estona o alguna altra activitat que et vingui de gust.
-  Avui és el dia de les decisions ràpides: no pots tardar més de 15 segons en escollir la roba que et posaràs.
-  Dia d'anar al supermercat! Prova a trobar el més ràpid possible on són les galetes Maria al teu supermercat de confiança.
+Avui és un bon dia per fer algo d'esport, potser anar a caminar una estona o alguna altra activitat que et vingui de gust.
+Avui és el dia de les decisions ràpides: no pots tardar més de 15 segons en escollir la roba que et posaràs. 
+Dia d'anar al supermercat! Prova a trobar el més ràpid possible on són les galetes Maria al teu supermercat de confiança.
   ''',
 
     'Fluència verbal': '''
-  Avui és un bon dia per fer algo d'esport, potser anar a caminar una estona o alguna altra activitat que et vingui de gust.
-  Avui durant 5 minuts has d'anar dient els objectes que veus al teu voltant.
-  Pensa durant uns minuts quantes fruites i verdures hi ha de color vermell.
+Avui és un bon dia per fer algo d'esport, potser anar a caminar una estona o alguna altra activitat que et vingui de gust.
+Avui durant 5 minuts has d'anar dient els objectes que veus al teu voltant.
+Pensa durant uns minuts quantes fruites i verdures hi ha de color vermell.
   ''',
 
     'Cap': '''
-  Enhorabona! Les teves respostes indiquen que actualment no presentes problemes cognitius.
-  És important, però, mantenir un estil de vida saludable per ajudar a prevenir-ho. T'animem a:
-  - Fer esport
-  - Cuidar l'alimentació
-  - Aprendre coses noves
-  - Sociabilitzar
-  - Practicar mindfulness
+Enhorabona! Les teves respostes indiquen que actualment no presentes problemes cognitius.
+És important, però, mantenir un estil de vida saludable per ajudar a prevenir-ho. T'animem a:
+- Fer esport
+- Cuidar l'alimentació
+- Aprendre coses noves
+- Sociabilitzar
+- Practicar mindfulness
   ''',
   };
 
@@ -129,13 +131,13 @@ class StatsPage extends StatelessWidget {
 
         // TODO
         // Cognitive problems block
-        blocks.add(_InfoBlock(
-          title: 'Problemes cognitius (no actiu)',
-          subtitle: 'Aquest bloc no s’està utilitzant de moment.',
-          recommendation:
-              'Quan s’integri la part objectiva, aquí es mostraran resultats i recomanacions específiques.',
-          urls: const [],
-        ));
+        // blocks.add(_InfoBlock(
+        //   title: 'Problemes cognitius (no actiu)',
+        //   subtitle: 'Aquest bloc no s’està utilitzant de moment.',
+        //   recommendation:
+        //       'Quan s’integri la part objectiva, aquí es mostraran resultats i recomanacions específiques.',
+        //   urls: const [],
+        // ));
 
         // Block without problems 
         if (allNoProblem || detected.isEmpty) {
@@ -157,6 +159,8 @@ class StatsPage extends StatelessWidget {
           ));
         }
 
+        final String firstDayOfWeek = entries.isNotEmpty ? entries.last['date'] as String : '';
+
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
@@ -165,8 +169,8 @@ class StatsPage extends StatelessWidget {
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             Text(
-              "Resultats de la setmana del XXX", 
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              "Resultats de la setmana del $firstDayOfWeek", 
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey.shade700),
             ),
             const SizedBox(height: 12),
             ...blocks.map((w) => Padding(
@@ -224,25 +228,25 @@ class _InfoBlock extends StatelessWidget {
 
             // Videos
             if (urls.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              const Text(
-                'Vídeos recomanats:',
-                style:
-                    TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-              ),
               const SizedBox(height: 6),
-              ...urls.map(
-                (u) => Padding(
-                  padding: const EdgeInsets.only(bottom: 6),
-                  child: Text(
-                    u,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
+              if (urls.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                const Text(
+                  'Vídeos recomanats:',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                 ),
-              ),
+                const SizedBox(height: 8),
+                Column(
+                  children: urls
+                      .map(
+                        (u) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: YoutubeThumbnail(url: u),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ],
             ],
           ],
         ),
