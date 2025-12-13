@@ -27,15 +27,44 @@ class _DailyQuestionnairePageState
     'Ninguna de les anteriors.',
   ];
 
-  Future<void> _submit() async {
+  final Map<String, String> responseDiagnosisMap = {
+    'He anat a un lloc de l’habitació i, quan hi he arribat, no he recordat què hi anava a fer.':
+        'Atenció',
+    'He trigat més del normal a fer una activitat que abans feia més ràpid.':
+        'Velocitat de processament',
+    'Volia dir una paraula i no m’ha sortit, o n’he dit una altra sense voler.':
+        'Fluència verbal',
+    'Quan estava parlant amb algú, he perdut el fil de la conversa.':
+        'Atenció',
+    'M’han preguntat per una cosa que m’havien dit fa poc i no me n’he recordat.':
+        'Memòria',
+    'He tingut problemes per recordar informació que ja sabia prèviament.':
+        'Memòria',
+    'He tingut problemes per prendre una decisió que abans no m’hauria costat.':
+        'Funcions executives',
+    'He tingut dificultats per planificar el meu dia.':
+        'Funcions executives',
+    'He sentit sensació de nebulosa mental.':
+        'Funcions executives',
+    'He sentit que penso més lenta avui.':
+        'Velocitat de processament',
+    'Ninguna de les anteriors.': 'Cap',
+  };
+
+    Future<void> _submit() async {
     if (selectedOption == null) return;
 
-    await DailyQuestionnaireStorage.markTodayAsCompleted();
-    if (mounted) {
-      Navigator.pop(context); // Go back to Home
-    }
-  }
+    final diagnosis =
+        responseDiagnosisMap[selectedOption!] ?? 'Cap';
 
+    await DailyQuestionnaireStorage.saveDailyEntry(
+        diagnosis: diagnosis,
+    );
+
+    if (mounted) {
+        Navigator.pop(context);
+    }
+    }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
