@@ -135,30 +135,66 @@ class _Domain1PageState extends State<Domain1Page> {
         correctWords = 0;
     }
 
-    Widget _buildInstructions() {
-        return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+  Widget _buildInstructions() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
             const Text(
-                "Instruccions",
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 24),
-                const Text(
-                'You will see a category.\n'
-                'You will have to say as many words that belong to that category as you can.\n'
-                'Between each word of the category, you will have to say a word that starts with the specified letter.\n',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16),
-                ),
-                const SizedBox(height: 32),
-                ElevatedButton(
-                onPressed: _startTest,
-                child: const Text('Començar'),
+              'Instruccions',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-        ],
-        );
-    }
+
+            const SizedBox(height: 20),
+
+            const Text(
+              "En aquesta prova apareixerà una categoria i una lletra. Hauràs de dir una paraula que pertanyi a la categoria en qüestió, seguidament, una paraula que comenci per la lletra indicada i així successivament. Has de dir tantes paraules com siguis capaç en el període d'un minut.",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16),
+            ),
+
+            const SizedBox(height: 20),
+
+            const Text(
+              'Fes-ho amb calma i concentra’t.\n'
+              'No passa res si t’equivoques.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                fontStyle: FontStyle.italic,
+                color: Colors.black54,
+              ),
+            ),
+
+            const SizedBox(height: 36),
+
+            SizedBox(
+              width: 260,
+              child: ElevatedButton(
+                onPressed: _startTest,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'Començar la prova',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
     @override
     Widget build(BuildContext context) {
