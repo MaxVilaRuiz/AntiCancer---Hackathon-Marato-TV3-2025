@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'dart:async';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Domain4Page extends StatefulWidget {
   const Domain4Page({super.key});
@@ -28,6 +30,49 @@ class Page4 extends State<Domain4Page> {
   final Random random = Random();
   bool showEndButton = false;
   int buttonAct = 0;
+
+  // SharedPreferences config
+  bool loading = true;
+  int? storedTimeMs;
+
+
+    @override
+    void initState() {
+        super.initState();
+        _checkStoredResult();
+    }
+
+
+  // Logic
+  Future<void> _checkStoredResult() async {
+    final prefs = await SharedPreferences.getInstance();
+    final stored = prefs.getString('domain4');
+
+    if (stored != null) {
+      final data = jsonDecode(stored);
+      storedTimeMs = data['timeMs'] as int;
+
+      setState(() {
+        showStartButton = false;
+        showEndButton = true;
+        loading = false;
+      });
+    } else {
+      setState(() {
+        loading = false;
+      });
+    }
+  }
+
+  Future<void> _saveResult() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final data = jsonEncode({
+      'timeMs': milliseconds,
+    });
+
+    await prefs.setString('domain4', data);
+  }
 
   void clearMatrix() {
     for (int i = 0; i < 4; i++) {
@@ -82,6 +127,12 @@ class Page4 extends State<Domain4Page> {
 
   @override
   Widget build(BuildContext context) {
+    if (loading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text('Test de velocitat')),
       body: showStartButton? buildStartScreen(): showEndButton? buildEndScreen(): buildGrid(),
@@ -108,6 +159,8 @@ class Page4 extends State<Domain4Page> {
   }
 
   Widget buildEndScreen() {
+    final time = storedTimeMs ?? milliseconds;
+
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -120,19 +173,10 @@ class Page4 extends State<Domain4Page> {
             ),
           ),
           const SizedBox(height: 16),
+
           Text(
-            'Temps: ${milliseconds / 1000}s',
+            'Temps: ${(time / 1000).toStringAsFixed(2)} s',
             style: const TextStyle(fontSize: 24),
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                showStartButton = true;
-                showEndButton = false;
-              });
-            },
-            child: const Text('Tornar a començar'),
           ),
         ],
       ),
@@ -190,6 +234,7 @@ class Page4 extends State<Domain4Page> {
                             btn.active = false;
                             btn.greenBorder = true;
                             stopTimer();
+                            _saveResult();
                             showEndButton = true;
                           }
                           else{
