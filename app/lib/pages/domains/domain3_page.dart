@@ -177,32 +177,84 @@ class _Domain3PageState extends State<Domain3Page> {
 
 
   // Screens
-  Widget _buildInstructions() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text(
-          'Instruccions',
-          style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+    Widget _buildInstructions() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Instruccions',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            const Text(
+              'En aquesta prova veuràs una sèrie de números a la pantalla.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16),
+            ),
+
+            const SizedBox(height: 12),
+
+            const Text(
+              'Quan desapareguin, hauràs de repetir-los en ordre.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16),
+            ),
+
+            const SizedBox(height: 12),
+
+            const Text(
+              'Cada fase té dos intents.\n'
+              'Si falles els dos intents d’una mateixa fase, la prova s’acabarà.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.black54,
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            const Text(
+              'Fes-ho amb calma i concentra’t.\n'
+              'No passa res si t’equivoques.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                fontStyle: FontStyle.italic,
+                color: Colors.black54,
+              ),
+            ),
+
+            const SizedBox(height: 36),
+
+            SizedBox(
+              width: 260,
+              child: ElevatedButton(
+                onPressed: _startTest,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'Començar la prova',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 24),
-        const Text(
-          'You will see sequences of numbers.\n\n'
-          'Your task is to repeat the numbers\n'
-          'IN REVERSE ORDER.\n\n'
-          'Each phase has two attempts.\n'
-          'If you fail both attempts in the same phase,\n'
-          'the test will end.\n\n'
-          'Try to be as accurate as possible.',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 16),
-        ),
-        const SizedBox(height: 32),
-        ElevatedButton(
-          onPressed: _startTest,
-          child: const Text('Començar'),
-        ),
-      ],
+      ),
     );
   }
 

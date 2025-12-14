@@ -8,7 +8,7 @@ class Domain4Page extends StatefulWidget {
   const Domain4Page({super.key});
 
   @override
-  State<Domain4Page> createState() => Page4();
+  State<Domain4Page> createState() => _Domain4PageState();
 }
 
 class ButtonNum {
@@ -20,30 +20,35 @@ class ButtonNum {
   ButtonNum(this.value, {this.active = true});
 }
 
-class Page4 extends State<Domain4Page> {
+class _Domain4PageState extends State<Domain4Page> {
+  // Timer
   Timer? timer;
   int milliseconds = 0;
   bool running = false;
-  bool showStartButton = true;
+
+  // UI states
+  bool loading = true;
+  bool showInstructions = true;
+  bool showGrid = false;
+  bool showEndScreen = false;
+
+  // Stored result
+  int? storedTimeMs;
+
+  // Game state
   List<List<int>> matrix = List.generate(4, (_) => List.filled(5, 0));
   List<ButtonNum> buttons = [];
   final Random random = Random();
-  bool showEndButton = false;
   int buttonAct = 0;
 
-  // SharedPreferences config
-  bool loading = true;
-  int? storedTimeMs;
+  @override
+  void initState() {
+    super.initState();
+    _checkStoredResult();
+  }
 
+  // ---------------- STORAGE ----------------
 
-    @override
-    void initState() {
-        super.initState();
-        _checkStoredResult();
-    }
-
-
-  // Logic
   Future<void> _checkStoredResult() async {
     final prefs = await SharedPreferences.getInstance();
     final stored = prefs.getString('domain4');
@@ -53,8 +58,8 @@ class Page4 extends State<Domain4Page> {
       storedTimeMs = data['timeMs'] as int;
 
       setState(() {
-        showStartButton = false;
-        showEndButton = true;
+        showInstructions = false;
+        showEndScreen = true;
         loading = false;
       });
     } else {
@@ -72,6 +77,22 @@ class Page4 extends State<Domain4Page> {
     });
 
     await prefs.setString('domain4', data);
+  }
+
+  // ---------------- GAME LOGIC ----------------
+
+  void _startTest() {
+    setState(() {
+      showInstructions = false;
+      showGrid = true;
+      showEndScreen = false;
+      buttonAct = 0;
+      milliseconds = 0;
+    });
+
+    clearMatrix();
+    positionNumbers();
+    startTimer();
   }
 
   void clearMatrix() {
@@ -100,7 +121,7 @@ class Page4 extends State<Domain4Page> {
     if (running) return;
 
     running = true;
-    timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+    timer = Timer.periodic(const Duration(milliseconds: 200), (_) {
       setState(() {
         milliseconds += 200;
       });
@@ -112,18 +133,15 @@ class Page4 extends State<Domain4Page> {
     running = false;
   }
 
-  int resultButton (ButtonNum btn) {
-
-     if(btn.value == buttonAct + 1){
-        if(btn.value == 10){
-          return 2;
-        }
-        return 1;
-     }
-     return -1;
-
-
+  int resultButton(ButtonNum btn) {
+    if (btn.value == buttonAct + 1) {
+      if (btn.value == 10) return 2;
+      return 1;
+    }
+    return -1;
   }
+
+  // ---------------- UI ----------------
 
   @override
   Widget build(BuildContext context) {
@@ -135,30 +153,83 @@ class Page4 extends State<Domain4Page> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Test de velocitat')),
-      body: showStartButton? buildStartScreen(): showEndButton? buildEndScreen(): buildGrid(),
+      body: showInstructions
+          ? _buildInstructions()
+          : showEndScreen
+              ? _buildEndScreen()
+              : _buildGrid(),
     );
   }
 
-  Widget buildStartScreen(){
+  // -------- Instructions --------
+
+  Widget _buildInstructions() {
     return Center(
-      child: ElevatedButton(
-        onPressed: () {
-          setState(() {
-            showStartButton = false;
-            showEndButton = false;
-            buttonAct = 0;
-            milliseconds = 0;
-            clearMatrix();
-            positionNumbers();
-            startTimer();
-          });
-        },
-        child: const Text('Començar Prova'),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Instruccions',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'En aquesta prova veuràs una sèrie de números a la pantalla.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Hauràs de prémer els números en ordre, tan ràpid com puguis.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'El temps començarà a comptar quan iniciïs la prova.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 15, color: Colors.black54),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Fes-ho amb calma i concentra’t.\n'
+              'No passa res si t’equivoques.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                fontStyle: FontStyle.italic,
+                color: Colors.black54,
+              ),
+            ),
+            const SizedBox(height: 36),
+            SizedBox(
+              width: 260,
+              child: ElevatedButton(
+                onPressed: _startTest,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'Començar la prova',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget buildEndScreen() {
+  // -------- End screen --------
+
+  Widget _buildEndScreen() {
     final time = storedTimeMs ?? milliseconds;
 
     return Center(
@@ -167,13 +238,9 @@ class Page4 extends State<Domain4Page> {
         children: [
           const Text(
             'Has acabat!',
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
-
           Text(
             'Temps: ${(time / 1000).toStringAsFixed(2)} s',
             style: const TextStyle(fontSize: 24),
@@ -183,14 +250,14 @@ class Page4 extends State<Domain4Page> {
     );
   }
 
-  Widget buildGrid() {
-    Size size = MediaQuery.of(context).size;
-    final double screenWidth = size.width;
-    final double screenHeight = size.height * 0.7;
-    final double aspectRatio = screenWidth / screenHeight;
+  // -------- Grid --------
+
+  Widget _buildGrid() {
+    final size = MediaQuery.of(context).size;
+    final aspectRatio = size.width / (size.height * 0.7);
 
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8),
       child: GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 4,
@@ -200,78 +267,74 @@ class Page4 extends State<Domain4Page> {
         ),
         itemCount: 20,
         itemBuilder: (context, index) {
-          int row = index ~/ 5;
-            int col = index % 5;
-            int value = matrix[row][col];
-            if (value != 0) {
-              ButtonNum btn =
-                  buttons.firstWhere((b) => b.value == value);
-              return SizedBox.expand(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: btn.active ? Colors.white : Colors.grey[700],
-                    side: BorderSide(
-                      color: btn.redBorder
-                          ? Colors.red
-                          : btn.greenBorder
-                              ? Colors.green
-                              : Colors.blue,
-                      width: 4,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  onPressed: btn.active
-                    ? () {
-                        setState(() {
-                          if(resultButton(btn) == 1){
-                            btn.active = false;
-                            btn.greenBorder = true;
-                            buttonAct++;
-                          }
-                          else if(resultButton(btn) == 2){
-                            btn.active = false;
-                            btn.greenBorder = true;
-                            stopTimer();
-                            _saveResult();
-                            showEndButton = true;
-                          }
-                          else{
-                            btn.redBorder = true;
-                          }
-                          
-                        });
-                        if(btn.redBorder){
-                          Future.delayed(const Duration(milliseconds: 500), () {
-                            setState(() {
-                              btn.redBorder = false;
-                            });
-                          });
-                        }
-                        
+          final row = index ~/ 5;
+          final col = index % 5;
+          final value = matrix[row][col];
+
+          if (value == 0) {
+            return Container(color: Colors.grey[200]);
+          }
+
+          final btn = buttons.firstWhere((b) => b.value == value);
+
+          return ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor:
+                  btn.active ? Colors.white : Colors.grey[700],
+              side: BorderSide(
+                color: btn.redBorder
+                    ? Colors.red
+                    : btn.greenBorder
+                        ? Colors.green
+                        : Colors.blue,
+                width: 4,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            onPressed: btn.active
+                ? () {
+                    setState(() {
+                      final result = resultButton(btn);
+                      if (result == 1) {
+                        btn.active = false;
+                        btn.greenBorder = true;
+                        buttonAct++;
+                      } else if (result == 2) {
+                        btn.active = false;
+                        btn.greenBorder = true;
+                        stopTimer();
+                        _saveResult();
+                        showGrid = false;
+                        showEndScreen = true;
+                      } else {
+                        btn.redBorder = true;
                       }
-                    : null,
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown, // evita que el text sobresurti
-                    child: Text(
-                      '${btn.value}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 50, // augmenta el tamany base
-                      ),
-                    ),
-                  ),
+                    });
+
+                    if (btn.redBorder) {
+                      Future.delayed(const Duration(milliseconds: 500), () {
+                        setState(() {
+                          btn.redBorder = false;
+                        });
+                      });
+                    }
+                  }
+                : null,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                '${btn.value}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 50,
                 ),
-              );
-            } else {
-              return Container(color: Colors.grey[200]);
-            }
+              ),
+            ),
+          );
         },
       ),
     );
   }
-
-
-
 }

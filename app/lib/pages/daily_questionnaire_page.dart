@@ -81,12 +81,8 @@ class _DailyQuestionnairePageState
             ),
             const SizedBox(height: 24),
             DropdownButtonFormField<String>(
-
-              value: selectedOption,
-
               isExpanded: true,
-              initialValue: selectedOption,
-
+              value: selectedOption,
               items: options
                   .map(
                     (o) => DropdownMenuItem<String>(
