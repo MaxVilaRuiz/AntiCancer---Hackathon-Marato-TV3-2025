@@ -3,7 +3,6 @@ import 'package:app/widgets/speechrobust.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../widgets/speechrobust.dart';
 
 class Domain3Page extends StatefulWidget {
   const Domain3Page({super.key});

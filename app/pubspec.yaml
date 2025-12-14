@@ -30,7 +30,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  speech_to_text_ultra: ^0.0.1
   speech_to_text: ^6.6.0
   flutter_gemini: ^3.0.0
   dio: ^5.9.0

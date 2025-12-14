@@ -3,7 +3,7 @@ import 'dart:collection';
 import 'dart:convert';
 
 // IMPORTANT: Use a secure method (like environment variables) for this in a real app.
-const String HF_API_TOKEN = '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';
+const String HF_API_TOKEN = '';
 
 // This is a great multilingual embedding model from Hugging Face for "any language" support.
 const String HF_MODEL_ID = 'intfloat/multilingual-e5-large'; 
